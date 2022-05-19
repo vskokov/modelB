@@ -78,13 +78,14 @@ M(ϕ) = sum(ϕ)/L^3
 
 m² = -2.285
 
-ϕ = hotstart(L)
+#ϕ = hotstart(L)
+ϕ = zeros(Float32,(L,L,L))
 
 thermalize(m², ϕ, 100*L^4)
 
-maxt = L^4*25
+maxt = L^2*50
 
-skip=20 
+skip=1 
 
 ϕk = fft(ϕ)
 
