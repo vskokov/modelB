@@ -91,8 +91,9 @@ m² = -2.28587
 
 maxt = L^2
 
-for i in 0:maxt
+for i in 1:maxt
 	thermalize(m², ϕ, 100*L^2)
+	@show i
 	jldsave("/rsstu/users/v/vskokov/gluon/criticaldynamic/modelB/FC_L_"*string(L)*"_id_"*ARGS[1]*".jld2", true; ϕ=ϕ, m2=m² )
 end 
 

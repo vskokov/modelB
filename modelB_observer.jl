@@ -7,6 +7,7 @@ using BenchmarkTools
 using StaticArrays
 using FFTW
 using Random 
+using JLD2
 
 const λ = 4.0e0
 const Γ = 1.0e0
@@ -85,28 +86,22 @@ end
 
 M(ϕ) = sum(ϕ)/L^3
 
-m² = -2.28587
+conf_file = "/rsstu/users/v/vskokov/gluon/criticaldynamic/modelB/FC_L_"*string(L)*"_id_"*ARGS[1]*".jld2"
+df = load(conf_file)
 
-ϕ = hotstart(L)
+ϕ = df["ϕ"]
+m² = df["m2"]
 
-ϕ .= ϕ .- shuffle(ϕ)
+# decorrelate 
+thermalize(m², ϕ, L^4)
 
-@show M(ϕ)
+maxt = L^2*50
 
-#ϕ = zeros(Float32,(L,L,L))
-
-thermalize(m², ϕ, 100*L^4)
-
-@show M(ϕ)
-
-
-maxt = L^4*50
-
-skip=L^2 
+skip=10 
 
 ϕk = fft(ϕ)
 
-open("output_$L.dat","w") do io 
+open("/rsstu/users/v/vskokov/gluon/criticaldynamic/modelB/Dynamics_$L"*"_id_"*ARGS[1]*"_series_"*ARGS[3]*".dat","w") do io 
 	for i in 0:maxt
 		Mt = M(ϕ)
 
