@@ -4,21 +4,22 @@ using Plots
 using Distributions
 using Printf
 using BenchmarkTools
-using StaticArrays
 using FFTW
 using Random 
+using JLD2
 
 const λ = 4.0e0
 const Γ = 1.0e0
 const T = 1.0e0
 
+
+
+Random.seed!(parse(Int,ARGS[1]))
+
 const Δt = 0.04e0/Γ
 const Rate = Float64(sqrt(2.0*Δt*Γ))
 ξ = Normal(0.0e0, 1.0e0)
 
-
-
-Random.seed!(parse(Int,ARGS[1]))
 
 ### Lattice Size
 const L = parse(Int,ARGS[2])
@@ -83,41 +84,17 @@ function thermalize(m², ϕ, N=10000)
     end
 end
 
-M(ϕ) = sum(ϕ)/L^3
-
 m² = -2.28587
 
 ϕ = hotstart(L)
-
 ϕ .= ϕ .- shuffle(ϕ)
 
-@show M(ϕ)
+maxt = L^2
 
-#ϕ = zeros(Float32,(L,L,L))
+for i in 0:maxt
+	thermalize(m², ϕ, 100*L^2)
+	jldsave("/rsstu/users/v/vskokov/gluon/criticaldynamic/modelB/FC_L_"*string(L)*"_id_"*ARGS[1]*".jld2", true; ϕ=ϕ, m2=m² )
+end 
 
-thermalize(m², ϕ, 100*L^4)
+## Intermidiates saving is to preserve the data if the programs times out on HPC 
 
-@show M(ϕ)
-
-
-maxt = L^4*50
-
-skip=1 
-
-ϕk = fft(ϕ)
-
-open("output_$L.dat","w") do io 
-	for i in 0:maxt
-		Mt = M(ϕ)
-
-		ϕk = fft(ϕ)
-
-		Printf.@printf(io, "%i %f", skip*i, Mt)
-		for kx in 1:L
-			Printf.@printf(io, " %f %f", real(ϕk[kx,1,1]), imag(ϕk[kx,1,1]))
-		end 
-
-		Printf.@printf(io,  "\n")
-		thermalize(m², ϕ, skip)
-	end
-end
