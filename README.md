@@ -1,1 +1,1 @@
-# modelB
+# Model B of critical dynamics 
