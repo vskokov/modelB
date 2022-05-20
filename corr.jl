@@ -21,14 +21,27 @@ end
 
 df_16=readdlm("output_16.dat",' ')
 df_8=readdlm("output_8.dat",' ')
+df_4=readdlm("output_4.dat",' ')
+
+(t_8,c_8) = autocor_loc_2(df_8[:,5].+df_8[:,6].*1.0im, 1, Int(8^4/4), 1)
+
+(t_4,c_4) = autocor_loc_2(df_4[:,5].+df_4[:,6].*1.0im, 1, Int(4^4/4), 1)
+
+(t_16,c_16) = autocor_loc_2(df_16[:,5].+df_16[:,6].*1.0im, 1, 16^2, 1)
+
+sum(df_8[:,7])/length(df_8[:,5])
 
 
-(t_8,c_8) = autocor_loc_2(df_8[:,7].+df_8[:,8].*1.0im, 1, 8, 1)
+plot(layout=[1 1])
+
+plot!((t_4.-1.0),real(c_4)/real(c_4[1]),label=L"L=4",xlabel = L"t/L^4")
+
+plot!((t_8.-1.0),real(c_8)/real(c_8[1]),label=L"L=8",xlabel = L"t",xlim=(0,60))
+
+plot!((t_4.-1.0)/4^(4-0),real(c_4)/real(c_4[1]),label=L"L=4",xlabel = L"t/L^4",sp=2)
+
+plot!((t_8.-1.0)/8^(4-0),real(c_8)/real(c_8[1]),label=L"L=8",xlabel = L"t/L^4",sp=2,xlim=(0,0.25))
 
 
-plot(t_8/8^2,real(c_8)/real(c_8[1]),label=L"L=8",xlabel = L"t/L^2")
 
-
-
-
-savefig("c.pdf")
+savefig("ModelB.pdf")
