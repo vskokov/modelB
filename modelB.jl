@@ -102,7 +102,7 @@ thermalize(m², ϕ, 100*L^4)
 
 maxt = L^4*50
 
-skip=L^2 
+skip=1 
 
 ϕk = fft(ϕ)
 

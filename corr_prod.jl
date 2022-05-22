@@ -101,6 +101,7 @@ function Bootstrap_corr(n,pattern,fun,p=2)
 		catch err
 			continue
 		end
+		@show i
 
 		(tau_,dyn_) = fun(i,n,p)
 		push!(DB,dyn_)
@@ -111,32 +112,33 @@ end
 
 
 
-n8=floor(Int, 8^4/4/10)
-(C_8,Cerr_8)=Bootstrap_corr(n8,"Dynamics_8_*",correlation_2,1)
+function generate_julia_data_output(L)
 
-x=(collect(1:length(C_8)) .-1 ).*10
+	n8=floor(Int, L^4/4/10)
+	(C_8,Cerr_8)=Bootstrap_corr(n8,"Dynamics_$L"*"_*",correlation_2,1)
 
-output_file = open("output_c2_8.jl","w") # this will create a file named output_file.jl, where we will write the data.
+	x=(collect(1:length(C_8)) .-1 ).*10 .* 0.04 # // the multiplier is the stepsize
 
-write(output_file, "t_8 = ") 
-show(output_file, x) 
-write(output_file, "; \n \n")
+	output_file = open("output_c2_$L"*".jl","w") # this will create a file named output_file.jl, where we will write the data.
 
-write(output_file, "C_8 = ") 
-show(output_file, C_8) 
-write(output_file, "; \n \n")
+	write(output_file, "t_$L = ") 
+	show(output_file, x) 
+	write(output_file, "; \n \n")
 
-write(output_file, "Cerr_8 = ") 
-show(output_file, real(Cerr_8)) 
-write(output_file, "; \n \n")
+	write(output_file, "C_$L = ") 
+	show(output_file, C_8) 
+	write(output_file, "; \n \n")
 
-write(output_file, "plot(t_8/8^4,C_8./C_8[1],ribbon=Cerr_8./C_8[1]); \n \n")
+	write(output_file, "Cerr_$L = ") 
+	show(output_file, real(Cerr_8)) 
+	write(output_file, "; \n \n")
 
+	#write(output_file, "plot(t_$L / $L^4,C_$L ./ C_$L"*"[1],ribbon=Cerr_$L ./ C_$L"*"[1]); \n \n")
 
-
-
-
-close(output_file)
-
+	close(output_file)
+end
 
 
+generate_julia_data_output(8)
+generate_julia_data_output(16)
+generate_julia_data_output(24)

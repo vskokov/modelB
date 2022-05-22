@@ -19,7 +19,7 @@ const Rate = Float64(sqrt(2.0*Δt*Γ))
 
 
 
-Random.seed!(parse(Int,ARGS[1]))
+Random.seed!(parse(Int,ARGS[1])^2 * parse(Int,ARGS[3])^3 )
 
 ### Lattice Size
 const L = parse(Int,ARGS[2])
@@ -93,7 +93,7 @@ df = load(conf_file)
 m² = df["m2"]
 
 # decorrelate 
-thermalize(m², ϕ, L^4)
+thermalize(m², ϕ, floor(Int,L^4/4))
 
 maxt = L^2*50
 
@@ -113,6 +113,7 @@ open("/rsstu/users/v/vskokov/gluon/criticaldynamic/modelB/Dynamics_$L"*"_id_"*AR
 		end 
 
 		Printf.@printf(io,  "\n")
+		flush(io)
 		thermalize(m², ϕ, skip)
 	end
 end
